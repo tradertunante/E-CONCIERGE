@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Fraunces", "Georgia", serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --color-ocean-50: #eef8fa;
+  --color-ocean-100: #d3edf1;
+  --color-ocean-200: #a6dbe3;
+  --color-ocean-300: #71c1cf;
+  --color-ocean-400: #3ea1b4;
+  --color-ocean-500: #237e93;
+  --color-ocean-600: #1c6478;
+  --color-ocean-700: #1a5262;
+  --color-ocean-800: #194352;
+  --color-ocean-900: #163846;
+
+  --color-sand-50: #fdf9f3;
+  --color-sand-100: #f8efe0;
+  --color-sand-200: #f0dcbe;
+  --color-sand-300: #e5c090;
+  --color-sand-400: #d9a262;
+  --color-sand-500: #c9843f;
+  --color-sand-600: #ad6832;
+  --color-sand-700: #8c522c;
+  --color-sand-800: #714229;
+  --color-sand-900: #5c3723;
+
+  --color-gold-300: #ecd4a0;
+  --color-gold-400: #dcb45c;
+  --color-gold-500: #c89a3c;
+  --color-gold-600: #a87d2c;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-sand-50);
+  color: var(--color-ocean-900);
+}
+
+.font-display {
+  font-family: var(--font-serif);
+}
+
+::selection {
+  background-color: var(--color-gold-300);
+  color: var(--color-ocean-900);
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
