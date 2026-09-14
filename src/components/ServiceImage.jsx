@@ -7,8 +7,12 @@ const ICONS = {
   transporte: Car,
 };
 
+const SUBCATEGORY_ICONS = {
+  boats: Anchor,
+};
+
 export default function ServiceImage({ service, className = "" }) {
-  const Icon = ICONS[service.category] || Compass;
+  const Icon = SUBCATEGORY_ICONS[service.subcategory] || ICONS[service.category] || Compass;
 
   if (service.image) {
     return (

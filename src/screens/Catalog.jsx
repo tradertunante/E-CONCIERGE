@@ -4,16 +4,29 @@ import ServiceCard from "../components/ServiceCard";
 import ServiceDetailModal from "../components/ServiceDetailModal";
 import ServiceImage from "../components/ServiceImage";
 import { useApp } from "../context/AppContext";
-import { ALL_SERVICES, CATEGORIES } from "../data/services";
+import { ACTIVITY_SUBCATEGORIES, ALL_SERVICES, CATEGORIES } from "../data/services";
 
 export default function Catalog() {
   const { items, removeItem, formatPrice, setScreen } = useApp();
   const [activeCategory, setActiveCategory] = useState("restaurantes");
+  const [activeSubcategory, setActiveSubcategory] = useState("all");
   const [openService, setOpenService] = useState(null);
 
+  const handleCategoryChange = (categoryId) => {
+    setActiveCategory(categoryId);
+    setActiveSubcategory("all");
+  };
+
   const filtered = useMemo(
-    () => ALL_SERVICES.filter((s) => s.category === activeCategory),
-    [activeCategory]
+    () =>
+      ALL_SERVICES.filter((s) => {
+        if (s.category !== activeCategory) return false;
+        if (activeCategory === "actividades" && activeSubcategory !== "all") {
+          return s.subcategory === activeSubcategory;
+        }
+        return true;
+      }),
+    [activeCategory, activeSubcategory]
   );
 
   const total = items.reduce((sum, it) => {
@@ -33,12 +46,12 @@ export default function Catalog() {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
-        <div>
+        <div className="min-w-0">
           <div className="mb-6 flex gap-2 overflow-x-auto scrollbar-hide">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
+                onClick={() => handleCategoryChange(cat.id)}
                 className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
                   activeCategory === cat.id
                     ? "bg-ocean-700 text-white"
@@ -49,6 +62,34 @@ export default function Catalog() {
               </button>
             ))}
           </div>
+
+          {activeCategory === "actividades" && (
+            <div className="mb-6 flex gap-2 overflow-x-auto scrollbar-hide">
+              <button
+                onClick={() => setActiveSubcategory("all")}
+                className={`whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+                  activeSubcategory === "all"
+                    ? "bg-ocean-100 text-ocean-800 border border-ocean-200"
+                    : "bg-white text-ocean-700/70 border border-sand-200 hover:bg-sand-50"
+                }`}
+              >
+                Todas
+              </button>
+              {ACTIVITY_SUBCATEGORIES.map((sub) => (
+                <button
+                  key={sub.id}
+                  onClick={() => setActiveSubcategory(sub.id)}
+                  className={`whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+                    activeSubcategory === sub.id
+                      ? "bg-ocean-100 text-ocean-800 border border-ocean-200"
+                      : "bg-white text-ocean-700/70 border border-sand-200 hover:bg-sand-50"
+                  }`}
+                >
+                  {sub.label}
+                </button>
+              ))}
+            </div>
+          )}
 
           <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {filtered.map((service) => (

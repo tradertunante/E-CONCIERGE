@@ -6,8 +6,15 @@
 export const CATEGORIES = [
   { id: "restaurantes", label: "Restaurantes", icon: "utensils" },
   { id: "actividades", label: "Actividades", icon: "compass" },
-  { id: "barcos", label: "Barcos", icon: "anchor" },
   { id: "transporte", label: "Transporte", icon: "car" },
+];
+
+// Actividades se organiza en subcategorías: terrestres, acuáticas, city tours y barcos.
+export const ACTIVITY_SUBCATEGORIES = [
+  { id: "land", label: "Terrestres" },
+  { id: "water", label: "Acuáticas" },
+  { id: "city", label: "City tours" },
+  { id: "boats", label: "Barcos" },
 ];
 
 const gradients = [
@@ -227,6 +234,7 @@ export const ACTIVITIES = [
   {
     id: "a1",
     category: "actividades",
+    subcategory: "land",
     name: "UTV por el desierto",
     location: "Desierto de Baja",
     tagline: "Dunas y arroyos en vehículo todo terreno",
@@ -245,6 +253,7 @@ export const ACTIVITIES = [
   {
     id: "a2",
     category: "actividades",
+    subcategory: "land",
     name: "Paseo en camello por la playa",
     location: "Costa del Pacífico",
     tagline: "Cabalgata al atardecer",
@@ -263,6 +272,7 @@ export const ACTIVITIES = [
   {
     id: "a3",
     category: "actividades",
+    subcategory: "land",
     name: "Circuito de tirolesas",
     location: "Corredor Turístico",
     tagline: "7 líneas sobre cañones",
@@ -281,6 +291,7 @@ export const ACTIVITIES = [
   {
     id: "a4",
     category: "actividades",
+    subcategory: "water",
     name: "Motos acuáticas",
     location: "Bahía de Cabo San Lucas",
     tagline: "Recorrido costero con instructor",
@@ -299,6 +310,7 @@ export const ACTIVITIES = [
   {
     id: "a5",
     category: "actividades",
+    subcategory: "land",
     name: "ATV por el cañón",
     location: "Sierra de la Laguna",
     tagline: "Cuatrimotos por senderos rocosos",
@@ -317,6 +329,7 @@ export const ACTIVITIES = [
   {
     id: "a6",
     category: "actividades",
+    subcategory: "land",
     name: "Rappel en pared de roca",
     location: "Cañón El Salto",
     tagline: "Descenso guiado en volcánico",
@@ -335,6 +348,7 @@ export const ACTIVITIES = [
   {
     id: "a7",
     category: "actividades",
+    subcategory: "water",
     name: "Snorkel en El Arco",
     location: "El Arco, Cabo San Lucas",
     tagline: "Aguas cristalinas junto al icónico Arco",
@@ -350,12 +364,51 @@ export const ACTIVITIES = [
     gradient: grad(4),
     image: img("1544551763-46a013bb70d5"),
   },
+  {
+    id: "a8",
+    category: "actividades",
+    subcategory: "city",
+    name: "City tour San José del Cabo",
+    location: "San José del Cabo",
+    tagline: "Centro histórico, galerías y misión",
+    description:
+      "Recorrido a pie por el centro histórico, galerías de arte y la misión de San José del Cabo, con guía local.",
+    longDescription:
+      "Un recorrido guiado por las calles empedradas del centro histórico de San José del Cabo, deteniéndose en galerías de arte, la plaza principal y la misión jesuita del siglo XVIII. Incluye guía bilingüe y transporte redondo desde el hotel.",
+    price: 750,
+    priceUnit: "persona",
+    duration: "3 hrs",
+    times: ["09:00", "16:00"],
+    recommended: false,
+    gradient: grad(0),
+    image: img("1519681393784-d120267933ba"),
+  },
+  {
+    id: "a9",
+    category: "actividades",
+    subcategory: "city",
+    name: "Todos Santos, Pueblo Mágico",
+    location: "Todos Santos",
+    tagline: "Arte, boutiques y el Hotel California",
+    description:
+      "Día completo en el Pueblo Mágico de Todos Santos: galerías, boutiques artesanales y el histórico Hotel California.",
+    longDescription:
+      "Excursión de día completo al Pueblo Mágico de Todos Santos, cruzando la sierra hasta la costa del Pacífico. Tiempo libre para recorrer galerías de arte, boutiques artesanales y conocer el histórico Hotel California, con guía y transporte redondo incluidos.",
+    price: 1350,
+    priceUnit: "persona",
+    duration: "7 hrs",
+    times: ["09:00"],
+    recommended: false,
+    gradient: grad(3),
+    image: img("1518709594023-6eab9bab7b23"),
+  },
 ];
 
 export const BOATS = [
   {
     id: "b1",
-    category: "barcos",
+    category: "actividades",
+    subcategory: "boats",
     name: "Yate de pesca deportiva — medio día",
     location: "Marina Cabo San Lucas",
     tagline: "Marlín, dorado y atún",
@@ -374,7 +427,8 @@ export const BOATS = [
   },
   {
     id: "b2",
-    category: "barcos",
+    category: "actividades",
+    subcategory: "boats",
     name: "Yate de pesca deportiva — día completo",
     location: "Marina Cabo San Lucas",
     tagline: "Más tiempo en aguas profundas",
@@ -393,7 +447,8 @@ export const BOATS = [
   },
   {
     id: "b3",
-    category: "barcos",
+    category: "actividades",
+    subcategory: "boats",
     name: "Panga de pesca íntima",
     location: "Marina Cabo San Lucas",
     tagline: "Opción económica para 2-3 personas",
@@ -412,7 +467,8 @@ export const BOATS = [
   },
   {
     id: "b4",
-    category: "barcos",
+    category: "actividades",
+    subcategory: "boats",
     name: "Catamarán al atardecer",
     location: "Bahía de Cabo San Lucas",
     tagline: "Bebidas y música frente al Arco",
@@ -430,7 +486,8 @@ export const BOATS = [
   },
   {
     id: "b5",
-    category: "barcos",
+    category: "actividades",
+    subcategory: "boats",
     name: "Avistamiento de ballenas",
     location: "Bahía de Cabo San Lucas",
     tagline: "Temporada dic–abr",
@@ -448,7 +505,8 @@ export const BOATS = [
   },
   {
     id: "b6",
-    category: "barcos",
+    category: "actividades",
+    subcategory: "boats",
     name: "Yate privado — playa y snorkel",
     location: "Marina Cabo San Lucas",
     tagline: "Renta privada con paradas vírgenes",
