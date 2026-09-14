@@ -2,7 +2,7 @@ import { AlertTriangle, ArrowRight, Trash2, Users } from "lucide-react";
 import { useMemo } from "react";
 import ServiceImage from "../components/ServiceImage";
 import { useApp } from "../context/AppContext";
-import { ALL_SERVICES } from "../data/services";
+import { useCatalog } from "../context/CatalogContext";
 
 function parseDurationMinutes(duration) {
   const match = duration.match(/([\d.]+)\s*(hrs?|min)/i);
@@ -59,6 +59,7 @@ function detectConflicts(dayItems) {
 
 export default function Itinerary() {
   const { items, removeItem, tripDays, formatPrice, setScreen } = useApp();
+  const { services: ALL_SERVICES } = useCatalog();
 
   const grouped = useMemo(() => {
     const map = new Map();

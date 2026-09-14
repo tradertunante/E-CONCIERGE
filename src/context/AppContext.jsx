@@ -31,7 +31,12 @@ function defaultTrip() {
 export function AppProvider({ children }) {
   const saved = loadState();
 
-  const [screen, setScreen] = useState("home");
+  const [screen, setScreen] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("order")) return "confirmation";
+    if (params.get("screen") === "admin") return "admin";
+    return "home";
+  });
   const [trip, setTrip] = useState(saved?.trip || defaultTrip());
   const [items, setItems] = useState(saved?.items || []); // { itemId, serviceId, day, time, people }
   const [currency, setCurrency] = useState(saved?.currency || "MXN");
@@ -39,14 +44,12 @@ export function AppProvider({ children }) {
   const [guestInfo, setGuestInfo] = useState(
     saved?.guestInfo || { name: "", email: "", phone: "", promoCode: "" }
   );
-  const [lastOrder, setLastOrder] = useState(saved?.lastOrder || null);
-
   useEffect(() => {
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({ trip, items, currency, language, guestInfo, lastOrder })
+      JSON.stringify({ trip, items, currency, language, guestInfo })
     );
-  }, [trip, items, currency, language, guestInfo, lastOrder]);
+  }, [trip, items, currency, language, guestInfo]);
 
   const tripDays = useMemo(() => {
     const days = [];
@@ -109,8 +112,6 @@ export function AppProvider({ children }) {
     guestInfo,
     setGuestInfo,
     formatPrice,
-    lastOrder,
-    setLastOrder,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

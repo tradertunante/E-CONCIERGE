@@ -1,10 +1,12 @@
 import { Anchor, Compass, Minus, Plus, ShieldCheck, Sparkles, Utensils } from "lucide-react";
 import { useApp } from "../context/AppContext";
-import { PACKAGES, ALL_SERVICES } from "../data/services";
+import { useCatalog } from "../context/CatalogContext";
+import { PACKAGES } from "../data/services";
 import ServiceImage from "../components/ServiceImage";
 
 export default function Home() {
   const { trip, setTrip, setScreen, addItem, tripDays, language } = useApp();
+  const { services: ALL_SERVICES } = useCatalog();
 
   function handleStart() {
     setScreen("catalog");

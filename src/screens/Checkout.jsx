@@ -1,42 +1,32 @@
-import { CreditCard, Lock, ShieldCheck, Tag } from "lucide-react";
+import { Lock, ShieldCheck, Tag } from "lucide-react";
 import { useMemo, useState } from "react";
 import ServiceImage from "../components/ServiceImage";
 import { useApp } from "../context/AppContext";
-import { ALL_SERVICES } from "../data/services";
+import { useCatalog } from "../context/CatalogContext";
+import { createOrder } from "../lib/api";
 
 function formatDayLabel(dateStr) {
   const d = new Date(dateStr + "T00:00:00");
   return d.toLocaleDateString("es-MX", { weekday: "short", day: "numeric", month: "short" });
 }
 
-function formatCardNumber(value) {
-  const digits = value.replace(/\D/g, "").slice(0, 16);
-  return digits.replace(/(.{4})/g, "$1 ").trim();
-}
-
-function formatExpiry(value) {
-  const digits = value.replace(/\D/g, "").slice(0, 4);
-  if (digits.length <= 2) return digits;
-  return `${digits.slice(0, 2)}/${digits.slice(2)}`;
-}
-
 const VALID_PROMO = { CONCIERGE10: 0.1, CABOS2026: 0.05 };
 
 export default function Checkout() {
-  const {
-    items,
-    tripDays,
-    trip,
-    formatPrice,
-    guestInfo,
-    setGuestInfo,
-    setScreen,
-    setLastOrder,
-    clearItinerary,
-  } = useApp();
-  const [card, setCard] = useState({ number: "", name: "", expiry: "", cvv: "" });
+  const { items, tripDays, trip, currency, formatPrice, guestInfo, setGuestInfo, setScreen } =
+    useApp();
+  const { services: ALL_SERVICES } = useCatalog();
   const [promoApplied, setPromoApplied] = useState(null);
   const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Se regenera solo si cambia el conjunto de items del itinerario, para que
+  // un doble clic en "Pagar" reutilice la misma orden en vez de duplicarla.
+  const idempotencyKey = useMemo(
+    () => crypto.randomUUID(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [items.map((it) => it.itemId).join(",")]
+  );
 
   const lineItems = items.map((it) => {
     const service = ALL_SERVICES.find((s) => s.id === it.serviceId);
@@ -51,11 +41,6 @@ export default function Checkout() {
 
   const formValid =
     guestInfo.name.trim() && guestInfo.email.trim().includes("@") && guestInfo.phone.trim();
-  const cardValid =
-    card.number.replace(/\D/g, "").length >= 15 &&
-    card.name.trim() &&
-    card.expiry.length === 5 &&
-    card.cvv.length >= 3;
 
   function applyPromo() {
     const code = guestInfo.promoCode.trim().toUpperCase();
@@ -66,30 +51,22 @@ export default function Checkout() {
     }
   }
 
-  function handlePay() {
+  async function handlePay() {
+    setError(null);
     setProcessing(true);
-    setTimeout(() => {
-      setLastOrder({
-        confirmationCode: `LC-${Math.floor(100000 + Math.random() * 900000)}`,
-        lineItems: lineItems.map(({ itemId, serviceId, day, time, people, lineTotal }) => ({
-          itemId,
-          serviceId,
-          day,
-          time,
-          people,
-          lineTotal,
-        })),
-        subtotal,
-        discount,
-        total,
+    try {
+      const { checkoutUrl } = await createOrder({
+        idempotencyKey,
         guestInfo,
         trip,
+        currency,
+        items: items.map(({ serviceId, day, time, people }) => ({ serviceId, day, time, people })),
       });
-      clearItinerary();
+      window.location.href = checkoutUrl;
+    } catch (err) {
+      setError(err.message || "No se pudo iniciar el pago. Intenta de nuevo.");
       setProcessing(false);
-      setScreen("confirmation");
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }, 1400);
+    }
   }
 
   if (items.length === 0) {
@@ -110,7 +87,7 @@ export default function Checkout() {
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
       <p className="text-xs font-semibold uppercase tracking-wide text-sand-600">Checkout</p>
       <h1 className="mt-1 font-display text-3xl font-semibold text-ocean-900">
-        Confirma y paga tu itinerario
+        Confirma tu itinerario
       </h1>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_400px]">
@@ -179,79 +156,26 @@ export default function Checkout() {
             </div>
           </div>
 
-          {/* Payment (simulated) */}
+          {/* Payment */}
           <div className="rounded-2xl border border-sand-200 bg-white p-6">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-lg font-semibold text-ocean-900">Pago</h2>
               <span className="flex items-center gap-1 text-xs text-ocean-700/60">
-                <Lock size={12} /> Pago simulado — demo
+                <Lock size={12} /> Procesado de forma segura por Stripe
               </span>
             </div>
-            <div className="mt-4 grid gap-4">
-              <label className="flex flex-col gap-1 text-sm">
-                <span className="font-medium text-ocean-800">Número de tarjeta</span>
-                <div className="relative">
-                  <input
-                    value={card.number}
-                    onChange={(e) =>
-                      setCard((c) => ({ ...c, number: formatCardNumber(e.target.value) }))
-                    }
-                    placeholder="4242 4242 4242 4242"
-                    inputMode="numeric"
-                    className="w-full rounded-lg border border-sand-200 px-3 py-2 pr-10 text-sm outline-none focus:border-ocean-400"
-                  />
-                  <CreditCard
-                    size={16}
-                    className="pointer-events-none absolute right-3 top-2.5 text-ocean-700/40"
-                  />
-                </div>
-              </label>
-              <label className="flex flex-col gap-1 text-sm">
-                <span className="font-medium text-ocean-800">Nombre en la tarjeta</span>
-                <input
-                  value={card.name}
-                  onChange={(e) => setCard((c) => ({ ...c, name: e.target.value }))}
-                  placeholder="ANDRES GARCIA"
-                  className="rounded-lg border border-sand-200 px-3 py-2 text-sm outline-none focus:border-ocean-400"
-                />
-              </label>
-              <div className="grid grid-cols-2 gap-4">
-                <label className="flex flex-col gap-1 text-sm">
-                  <span className="font-medium text-ocean-800">Vencimiento</span>
-                  <input
-                    value={card.expiry}
-                    onChange={(e) =>
-                      setCard((c) => ({ ...c, expiry: formatExpiry(e.target.value) }))
-                    }
-                    placeholder="MM/AA"
-                    inputMode="numeric"
-                    className="rounded-lg border border-sand-200 px-3 py-2 text-sm outline-none focus:border-ocean-400"
-                  />
-                </label>
-                <label className="flex flex-col gap-1 text-sm">
-                  <span className="font-medium text-ocean-800">CVV</span>
-                  <input
-                    value={card.cvv}
-                    onChange={(e) =>
-                      setCard((c) => ({
-                        ...c,
-                        cvv: e.target.value.replace(/\D/g, "").slice(0, 4),
-                      }))
-                    }
-                    placeholder="123"
-                    inputMode="numeric"
-                    className="rounded-lg border border-sand-200 px-3 py-2 text-sm outline-none focus:border-ocean-400"
-                  />
-                </label>
-              </div>
-            </div>
+            <p className="mt-3 text-sm text-ocean-800/70">
+              Al hacer clic serás redirigido a la página segura de pago de Stripe para completar
+              tu compra con tarjeta.
+            </p>
+            {error && <p className="mt-3 text-sm text-red-500">{error}</p>}
             <button
               onClick={handlePay}
-              disabled={!formValid || !cardValid || processing}
+              disabled={!formValid || processing}
               className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-ocean-700 py-3.5 text-sm font-semibold text-white shadow-sm hover:bg-ocean-800 disabled:opacity-40"
             >
               {processing ? (
-                "Procesando pago..."
+                "Redirigiendo a pago seguro..."
               ) : (
                 <>
                   <Lock size={15} /> Pagar {formatPrice(total)}
@@ -259,7 +183,7 @@ export default function Checkout() {
               )}
             </button>
             <p className="mt-3 flex items-center justify-center gap-1 text-center text-xs text-ocean-700/50">
-              <ShieldCheck size={12} /> Simulación de pago — no se realiza ningún cargo real.
+              <ShieldCheck size={12} /> Nunca vemos ni almacenamos los datos de tu tarjeta.
             </p>
           </div>
         </div>

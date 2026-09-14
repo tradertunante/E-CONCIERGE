@@ -4,10 +4,12 @@ import ServiceCard from "../components/ServiceCard";
 import ServiceDetailModal from "../components/ServiceDetailModal";
 import ServiceImage from "../components/ServiceImage";
 import { useApp } from "../context/AppContext";
-import { ACTIVITY_SUBCATEGORIES, ALL_SERVICES, CATEGORIES } from "../data/services";
+import { useCatalog } from "../context/CatalogContext";
+import { ACTIVITY_SUBCATEGORIES, CATEGORIES } from "../data/services";
 
 export default function Catalog() {
   const { items, removeItem, formatPrice, setScreen } = useApp();
+  const { services: ALL_SERVICES } = useCatalog();
   const [activeCategory, setActiveCategory] = useState("restaurantes");
   const [activeSubcategory, setActiveSubcategory] = useState("all");
   const [openService, setOpenService] = useState(null);
@@ -26,7 +28,7 @@ export default function Catalog() {
         }
         return true;
       }),
-    [activeCategory, activeSubcategory]
+    [ALL_SERVICES, activeCategory, activeSubcategory]
   );
 
   const total = items.reduce((sum, it) => {

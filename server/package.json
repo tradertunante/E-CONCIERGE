@@ -1,0 +1,24 @@
+{
+  "name": "e-concierge-server",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "migrate": "node-pg-migrate --database-url-var PG_CONNECTION_STRING -m src/db/migrations",
+    "migrate:up": "node-pg-migrate --database-url-var PG_CONNECTION_STRING -m src/db/migrations up",
+    "migrate:down": "node-pg-migrate --database-url-var PG_CONNECTION_STRING -m src/db/migrations down",
+    "seed:catalog": "node src/db/seed/seed-catalog.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "pg": "^8.13.0",
+    "stripe": "^17.4.0"
+  },
+  "devDependencies": {
+    "node-pg-migrate": "^7.6.1"
+  }
+}

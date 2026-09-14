@@ -1,7 +1,7 @@
 import { Anchor, Globe, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { useApp } from "../context/AppContext";
-import { ALL_SERVICES } from "../data/services";
+import { useCatalog } from "../context/CatalogContext";
 
 const NAV_ITEMS = [
   { id: "home", label: { es: "Inicio", en: "Home" } },
@@ -12,6 +12,7 @@ const NAV_ITEMS = [
 export default function NavBar() {
   const { screen, setScreen, items, currency, setCurrency, language, setLanguage, formatPrice } =
     useApp();
+  const { services: ALL_SERVICES } = useCatalog();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const total = items.reduce((sum, it) => {
